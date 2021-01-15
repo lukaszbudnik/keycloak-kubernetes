@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: auth-ingress
@@ -8,9 +8,13 @@ spec:
       - fake
       secretName: auth-tls-secret
   rules:
-  - host: auth.localtest.me
+  - host: "auth.localtest.me"
     http:
       paths:
-      - backend:
-          serviceName: keycloak
-          servicePort: 80
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: keycloak
+            port:
+              number: 80
