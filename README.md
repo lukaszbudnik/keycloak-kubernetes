@@ -1,6 +1,8 @@
 # keycloak-kubernetes
 
-This tutorial shows you how to deploy a Keycloak cluster on Kubernetes.
+This tutorial shows how to deploy a Keycloak cluster to Kubernetes.
+
+All the deployment steps together with a quick cluster test are available on YouTube: [Deploying Keycloak cluster to Kubernetes](https://www.youtube.com/watch?v=g8LVIr8KKSA&list=PLPZal7ksxNs0mgScrJxrggEayV-TPZ9sA&index=1).
 
 # Prerequisites
 
