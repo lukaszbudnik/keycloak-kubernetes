@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+spec:
+  rules:
+  - host: api.localtest.me
+    http:
+      paths:
+      - pathType: Prefix
+        path: /camarero
+        backend:
+          service:
+            name: camarero
+            port:
+              number: 80
+      - pathType: Prefix
+        path: /doncella
+        backend:
+          service:
+            name: doncella
+            port:
+              number: 80
+      - pathType: Prefix
+        path: /cocinera
+        backend:
+          service:
+            name: cocinera
+            port:
+              number: 80
