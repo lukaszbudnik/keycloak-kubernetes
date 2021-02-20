@@ -4,16 +4,16 @@ This tutorial shows how to deploy a Keycloak cluster to Kubernetes.
 
 All the deployment steps together with a quick cluster test are available on YouTube: [Deploying Keycloak cluster to Kubernetes](https://www.youtube.com/watch?v=g8LVIr8KKSA&list=PLPZal7ksxNs0mgScrJxrggEayV-TPZ9sA&index=1).
 
-I also provide a demo app which contains:
+I also provide a cloud native demo app which contains:
 
-* React front-end application
-* haproxy acting as an authentication & authorization gateway
-* mock backend microservices powered by [lukaszbudnik/yosoy](https://github.com/lukaszbudnik/yosoy)
-* ready-to-import Keycloak realm with predefined clients, roles, and test users
+- React front-end application authenticating with Keycloak using official Keycloak JavaScript adapter
+- haproxy acting as an authentication & authorization gateway implemented by [lukaszbudnik/haproxy-auth-gateway](https://github.com/lukaszbudnik/haproxy-auth-gateway)
+- mock backend microservices implemented by [lukaszbudnik/yosoy](https://github.com/lukaszbudnik/yosoy)
+- ready-to-import Keycloak realm with predefined client, roles, and test users
 
 # Deploy Keycloak cluster
 
-Please see [Prerequisites](PREREQUISITES.md) to make sure you have Kubernetes Dashboard, nginx-ingress, and bitnami helm repo configured.
+See [Prerequisites](PREREQUISITES.md) to make sure you have Kubernetes Dashboard, nginx-ingress, and bitnami helm repo configured.
 
 If you have all the prerequisites then you are just a few commands from running your first Keycloak cluster on Kubernetes:
 
@@ -34,13 +34,13 @@ Keycloak is now available at: https://auth.localtest.me.
 
 # Install demo apps
 
-I have provided a sample Hotel SPA application which authenticates with Keycloak, obtains JSON Web Token, and then uses it to talk to the protected services using HTTP Authorization Bearer mechanism. Authentication and authorization is implemented on haproxy server.
+I have provided a sample Hotel SPA application which authenticates with Keycloak using official Keycloak JavaScript adapter, obtains JSON Web Token, and then uses it to talk to the protected services using HTTP Authorization Bearer mechanism. Authentication and authorization is implemented by [lukaszbudnik/haproxy-auth-gateway](https://github.com/lukaszbudnik/haproxy-auth-gateway). Mock backend services are implemented by [lukaszbudnik/yosoy](https://github.com/lukaszbudnik/yosoy).
 
 ## Import ready-to-use Keycloak realm
 
 Keycloak offers partial exports of clients and users/roles from the admin console. There is also a low level import/export functionality which can export complete realm (together with cryptographic keys). I already setup such realm with clients, roles, and test users. I also exported RSA public key in pem format.
 
-This step could be done using Keycloak API but to keep things simple I will use import functionality.
+This step could be done using Keycloak API but to keep things simple I will use import functionality:
 
 ```bash
 # find first keycloak pod
@@ -67,3 +67,14 @@ As you can see the last command starts Keycloak. That's how import/export actual
 And then press [CTRL]+[C] to exit.
 
 More on import/export functionality can be found in Keycloak documentation: https://www.keycloak.org/docs/latest/server_admin/#_export_import.
+
+## Setup haproxy-auth-gateway
+
+```bash
+# create configmaps
+kubectl create configmap -n hotel haproxy-auth-gateway-iss-cert --from-file=demo/haproxy-auth-gateway/config/hotel.pem
+kubectl create configmap -n hotel haproxy-auth-gateway-haproxy-cfg --from-file=demo/haproxy-auth-gateway/config/haproxy.cfg
+# deploy the gateway
+kubectl apply -n hotel -f demo/haproxy-auth-gateway/gateway.yaml
+kubectl apply -n hotel -f demo/haproxy-auth-gateway/gateway-ingress.yaml
+```
