@@ -6,7 +6,7 @@ All the deployment steps together with a quick cluster test are available on You
 
 I also provide a cloud native demo app which contains:
 
-- React front-end application authenticating with Keycloak using official Keycloak JavaScript adapter
+- React front-end application authenticating with Keycloak using official Keycloak JavaScript adapter [lukaszbudnik/hotel-spa](https://github.com/lukaszbudnik/hotel-spa)
 - haproxy acting as an authentication & authorization gateway implemented by [lukaszbudnik/haproxy-auth-gateway](https://github.com/lukaszbudnik/haproxy-auth-gateway)
 - mock backend microservices implemented by [lukaszbudnik/yosoy](https://github.com/lukaszbudnik/yosoy)
 - ready-to-import Keycloak realm with predefined client, roles, and test users
