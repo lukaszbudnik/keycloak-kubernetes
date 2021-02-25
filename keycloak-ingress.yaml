@@ -2,6 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: auth-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
 spec:
   tls:
     - hosts:
@@ -17,4 +19,4 @@ spec:
           service:
             name: keycloak
             port:
-              number: 80
+              number: 8443

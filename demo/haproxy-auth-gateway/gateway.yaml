@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels:
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: hotel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gateway
+      app.kubernetes.io/version: "0.0.1"
+      app.kubernetes.io/component: frontend
+      app.kubernetes.io/part-of: hotel
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gateway
+        app.kubernetes.io/version: "0.0.1"
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/part-of: hotel
+    spec:
+      containers:
+      - name: gateway
+        env:
+          - name: OAUTH_PUBKEY_PATH
+            value: /etc/certs/hotel.pem
+          - name: OAUTH_ISSUER
+            value: https://auth.localtest.me/auth/realms/hotel
+        image: lukasz/haproxy-auth-gateway
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: iss-cert
+          mountPath: /etc/certs
+        - name: haproxy-cfg
+          mountPath: /usr/local/etc/haproxy
+      volumes:
+        - name: haproxy-cfg
+          configMap:
+            name: haproxy-auth-gateway-haproxy-cfg
+        - name: iss-cert
+          configMap:
+            name: haproxy-auth-gateway-iss-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  labels:
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: hotel
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: hotel
+  ports:
+    - protocol: TCP
+      port: 80
