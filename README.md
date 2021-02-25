@@ -36,6 +36,10 @@ Keycloak is now available at: https://auth.localtest.me.
 
 I have provided a sample Hotel SPA application which authenticates with Keycloak using official Keycloak JavaScript adapter, obtains JSON Web Token, and then uses it to talk to the protected services using HTTP Authorization Bearer mechanism.
 
+The architecture diagram looks like this:
+
+![Keycloak demo apps](keycloak-demo-apps.png?raw=true)
+
 ## Import ready-to-use Keycloak realm
 
 Keycloak offers partial exports of clients and users/roles from the admin console. There is also a low level import/export functionality which can export complete realm (together with cryptographic keys). I already setup such realm with clients, roles, and test users. I also exported RSA public key in pem format.
