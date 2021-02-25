@@ -699,18 +699,18 @@
       {
         "id": "bf66deaa-002e-4421-b8fa-fc208e2e2929",
         "clientId": "react",
-        "rootUrl": "http://localhost:3000/",
-        "adminUrl": "http://localhost:3000/",
+        "rootUrl": "https://lukaszbudnik.github.io/hotel-spa/",
+        "adminUrl": "https://lukaszbudnik.github.io/hotel-spa/",
         "surrogateAuthRequired": false,
         "enabled": true,
         "alwaysDisplayInConsole": false,
         "clientAuthenticatorType": "client-secret",
         "secret": "ee3ae010-4f1d-4ea4-92f3-c04fd90de25f",
         "redirectUris": [
-          "http://localhost:3000/*"
+          "https://lukaszbudnik.github.io/hotel-spa/*"
         ],
         "webOrigins": [
-          "http://localhost:3000"
+          "https://lukaszbudnik.github.io"
         ],
         "notBefore": 0,
         "bearerOnly": false,

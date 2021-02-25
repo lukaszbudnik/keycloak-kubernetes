@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: gateway-ingress
 spec:
+  tls:
+    - hosts:
+      - fake
+      secretName: api-tls-secret
   rules:
   - host: api.localtest.me
     http:

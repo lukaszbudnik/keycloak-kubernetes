@@ -7,8 +7,8 @@ Before we get to the actual Keycloak installation we need to setup our Kubernete
 If you don't have kubernetes dashboard installed already:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
-kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
 kubectl proxy
 ```
 
@@ -19,12 +19,13 @@ Copy the token from the above output and use it to authenticate to: http://local
 Make sure you have nginx ingress installed too:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.43.0/deploy/static/provider/cloud/deploy.yaml
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install ingress-nginx -n ingress-nginx --create-namespace ingress-nginx/ingress-nginx
 ```
 
-## helm
+## bitnami
 
-And of course helm with bitnami repo:
+And of course bitnami repo:
 
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
