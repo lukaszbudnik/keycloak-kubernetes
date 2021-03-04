@@ -11,6 +11,10 @@ I also provide a cloud native demo app which contains:
 - mock backend microservices implemented by [lukaszbudnik/yosoy](https://github.com/lukaszbudnik/yosoy)
 - ready-to-import Keycloak realm with predefined client, roles, and test users
 
+The deployment and a walkthrough of the demo apps is also available on YouTube: [Keycloak - Distributed apps end-to-end demo](https://www.youtube.com/watch?v=J42sR1t7Vt0&list=PLPZal7ksxNs0mgScrJxrggEayV-TPZ9sA&index=8).
+
+If you want to learn more about Keycloak see [Building cloud native apps: Identity and Access Management](https://dev.to/lukaszbudnik/building-cloud-native-apps-identity-and-access-management-1e5m).
+
 # Deploy Keycloak cluster
 
 See [Prerequisites](PREREQUISITES.md) to make sure you have Kubernetes Dashboard, nginx-ingress, and bitnami helm repo configured.
