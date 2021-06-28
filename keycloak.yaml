@@ -6,9 +6,9 @@ metadata:
     app: keycloak
 spec:
   ports:
-  - name: https
-    port: 443
-    targetPort: 8443
+    - name: https
+      port: 443
+      targetPort: 8443
   selector:
     app: keycloak
   type: ClusterIP
@@ -31,44 +31,46 @@ spec:
         app: keycloak
     spec:
       containers:
-      - name: keycloak
-        image: quay.io/keycloak/keycloak:12.0.3
-        env:
-        - name: KEYCLOAK_USER
-          value: "admin"
-        - name: KEYCLOAK_PASSWORD
-          value: "admin"
-        - name: PROXY_ADDRESS_FORWARDING
-          value: "true"
-        - name: DB_ADDR
-          value: keycloak-db-postgresql-ha-pgpool
-        - name: DB_DATABASE
-          value: postgres
-        - name: DB_USER
-          value: postgres
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: keycloak-db-postgresql-ha-postgresql
-              key: postgresql-password
-        - name: DB_SCHEMA
-          value: public
-        - name: DB_VENDOR
-          value: POSTGRES
-        - name: JGROUPS_DISCOVERY_PROTOCOL
-          value: dns.DNS_PING
-        - name: JGROUPS_DISCOVERY_PROPERTIES
-          value: 'dns_query=keycloak'
-        - name: CACHE_OWNERS_COUNT
-          value: "2"
-        - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
-          value: "2"
-        ports:
-        - name: http
-          containerPort: 8080
-        - name: https
-          containerPort: 8443
-        readinessProbe:
-          httpGet:
-            path: /auth/realms/master
-            port: 8080
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:14.0.0
+          env:
+            - name: KEYCLOAK_USER
+              value: "admin"
+            - name: KEYCLOAK_PASSWORD
+              value: "admin"
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+            - name: DB_ADDR
+              value: keycloak-db-postgresql-ha-pgpool
+            - name: DB_DATABASE
+              value: postgres
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-postgresql-ha-postgresql
+                  key: postgresql-password
+            - name: DB_SCHEMA
+              value: public
+            - name: DB_VENDOR
+              value: POSTGRES
+            - name: JGROUPS_DISCOVERY_PROTOCOL
+              value: dns.DNS_PING
+            - name: JGROUPS_DISCOVERY_PROPERTIES
+              value: "dns_query=keycloak"
+            - name: CACHE_OWNERS_COUNT
+              value: "2"
+            - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
+              value: "2"
+          ports:
+            - name: jgroups
+              containerPort: 7600
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          readinessProbe:
+            httpGet:
+              path: /auth/realms/master
+              port: 8080
