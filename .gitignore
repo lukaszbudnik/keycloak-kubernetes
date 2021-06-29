@@ -3,3 +3,4 @@
 TEST.md
 .DS_Store
 test.sh
+keycloak-ingress-eks.yaml
