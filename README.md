@@ -150,13 +150,15 @@ If you followed all the steps in the above tutorial the app is ready to be used:
 
 # Deploy Keycloak cluster to AWS EKS
 
+You can follow up below instructions together with the following YouTube video: [Deploying Keycloak cluster to AWS EKS](https://youtu.be/BuNZ7bjbzOQ).
+
 The following env variables have to be set:
 
 ```bash
 export AWS_REGION=us-east-2
 export CLUSTER_NAME=keycloak
 # using "auth.myproduct.example.org" as an example, I assume the following:
-# 1. AWS Route53 hostedzone ".myproduct.example.org" exists - external-dns addon will autodiscover it based on DNS name and add "auth.myproduct.example.org" record to it
+# 1. AWS Route53 hostedzone "myproduct.example.org" exists - external-dns addon will autodiscover it based on DNS name and add "auth.myproduct.example.org" record to it
 # 2. AWS Certificate Manager certificate "auth.myproduct.example.org" exists - aws-load-balancer-controller will autodiscover this certificate based on DNS name and use it for HTTPS listener
 export CLUSTER_DNS_NAME=auth.myproduct.example.org
 ```
