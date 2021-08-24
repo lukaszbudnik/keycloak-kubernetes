@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: yosoy
-        image: lukasz/yosoy
+        image: lukasz/yosoy:2.0.3
         resources:
             requests:
               memory: "4Mi"
@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
       - name: yosoy
-        image: lukasz/yosoy
+        image: lukasz/yosoy:2.0.3
         resources:
             requests:
               memory: "4Mi"
@@ -179,7 +179,7 @@ spec:
     spec:
       containers:
       - name: yosoy
-        image: lukasz/yosoy
+        image: lukasz/yosoy:2.0.3
         resources:
             requests:
               memory: "4Mi"

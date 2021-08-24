@@ -30,7 +30,7 @@ spec:
             value: /etc/certs/hotel.pem
           - name: OAUTH_ISSUER
             value: https://auth.localtest.me/auth/realms/hotel
-        image: lukasz/haproxy-auth-gateway
+        image: lukasz/haproxy-auth-gateway:2.0.0
         ports:
         - containerPort: 80
         volumeMounts:
