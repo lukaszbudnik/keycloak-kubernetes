@@ -13,7 +13,7 @@ sleep 30
 
 kubectl apply -n hotel -f keycloak.yaml
 
-sleep 30
+sleep 60
 
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout auth-tls.key -out auth-tls.crt -subj "/CN=auth.localtest.me/O=hotel"
 kubectl create secret -n hotel tls auth-tls-secret --key auth-tls.key --cert auth-tls.crt
