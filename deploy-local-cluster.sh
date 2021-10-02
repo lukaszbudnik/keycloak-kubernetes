@@ -9,13 +9,17 @@ kubectl create ns hotel
 
 helm install -n hotel keycloak-db bitnami/postgresql-ha
 
+sleep 30
+
 kubectl apply -n hotel -f keycloak.yaml
+
+sleep 30
 
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout auth-tls.key -out auth-tls.crt -subj "/CN=auth.localtest.me/O=hotel"
 kubectl create secret -n hotel tls auth-tls-secret --key auth-tls.key --cert auth-tls.crt
 kubectl apply -n hotel -f keycloak-ingress.yaml
 
-sleep 10
+sleep 30
 
 kubectl get deployment -n hotel
 kubectl get service -n hotel
