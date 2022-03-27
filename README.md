@@ -200,6 +200,8 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system
 
 # 3. install external-dns addon
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
 helm install external-dns bitnami/external-dns \
   --set provider=aws \
   -n kube-system
