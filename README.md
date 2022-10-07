@@ -17,24 +17,47 @@ If you want to learn more about Keycloak see [Building cloud native apps: Identi
 
 # Deploy Keycloak cluster locally
 
-See [Prerequisites](PREREQUISITES.md) to make sure you have Kubernetes Dashboard, nginx-ingress, and bitnami helm repo configured.
+For local development I will use minikube. For a production-like deployment see [Deploy Keycloak cluster to AWS](#deploy-keycloak-cluster-to-aws-eks).
 
-If you have all the prerequisites, then you are just a few commands from running your first Keycloak cluster on Kubernetes:
+Start and bootstrap minikube:
+
+```bash
+# start minikube
+minikube start
+minikube addons enable ingress
+# prerequisites
+helm repo add bitnami https://charts.bitnami.com/bitnami
+# when using minikube ingress addon ingress-nginx is already installed
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install ingress-nginx -n ingress-nginx --create-namespace ingress-nginx/ingress-nginx
+```
+
+Deploy the Keycloak cluster:
 
 ```bash
 # create dedicated namespace for our deployments
 kubectl create ns hotel
-# deploy PostgreSQL cluster
-helm install -n hotel keycloak-db bitnami/postgresql-ha
+# create TLS cert
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout auth-tls.key -out auth-tls.crt -subj "/CN=auth.localtest.me/O=hotel"
+kubectl create secret -n hotel tls auth-tls-secret --key auth-tls.key --cert auth-tls.crt
+# deploy PostgreSQL cluster - in dev we will use 1 replica, in production use the default value of 3 (or set it to even a higher value)
+helm install -n hotel keycloak-db bitnami/postgresql-ha --set postgresql.replicaCount=1
 # deploy Keycloak cluster
 kubectl apply -n hotel -f keycloak.yaml
 # create HTTPS ingress for Keycloak
-openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout auth-tls.key -out auth-tls.crt -subj "/CN=auth.localtest.me/O=hotel"
-kubectl create secret -n hotel tls auth-tls-secret --key auth-tls.key --cert auth-tls.crt
 kubectl apply -n hotel -f keycloak-ingress.yaml
 ```
 
+Start the tunnel.
+
+```bash
+# create tunnel
+minikube tunnel
+```
+
 Keycloak is now available at: https://auth.localtest.me.
+
+> Note: `auth.localtest.me` points to `127.0.0.1`. In case [localtest.me](https://readme.localtest.me) is blocked on your machine you need to add an entry to `/etc/hosts` or use [minikube ingress-dns addon](https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/).
 
 # Install demo apps
 

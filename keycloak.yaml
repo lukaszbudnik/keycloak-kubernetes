@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:19.0.2
+          image: quay.io/keycloak/keycloak:19.0.3
           args: ["start"]
           volumeMounts:
           - name: certs
@@ -52,7 +52,7 @@ spec:
             - name: KC_METRICS_ENABLED
               value: "true"
             - name: KC_HOSTNAME
-              value: keycloak
+              value: auth.localtest.me
             - name: KC_PROXY
               value: "edge"
             - name: KC_DB
@@ -77,15 +77,13 @@ spec:
           ports:
             - name: jgroups
               containerPort: 7600
-            - name: http
-              containerPort: 8080
             - name: https
               containerPort: 8443
           readinessProbe:
             httpGet:
-              scheme: HTTP
+              scheme: HTTPS
               path: /health/ready
-              port: 8080
+              port: 8443
             initialDelaySeconds: 60
             periodSeconds: 1
       volumes:
