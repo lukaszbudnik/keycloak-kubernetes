@@ -86,14 +86,10 @@ There will be also `react` client setup with the following settings:
 # find first keycloak pod
 POD_NAME=$(kubectl get pods -n hotel -l app=keycloak --no-headers -o custom-columns=":metadata.name" | head -1)
 # copy realm to the pod
-kubectl cp -n hotel demo/keycloak/hotel_realm.json $POD_NAME:/tmp/hotel_realm.json
+cat demo/keycloak/hotel_realm.json | kubectl exec -n hotel -i $POD_NAME -- sh -c "cat > /tmp/hotel_realm.json"
 # import realm
 kubectl exec -n hotel $POD_NAME -- \
-/opt/jboss/keycloak/bin/standalone.sh \
--Djboss.socket.binding.port-offset=100 \
--Dkeycloak.migration.action=import \
--Dkeycloak.migration.provider=singleFile \
--Dkeycloak.migration.file=/tmp/hotel_realm.json
+/opt/keycloak/bin/kc.sh import --file /tmp/hotel_realm.json
 ```
 
 As you can see the last command starts Keycloak. That's how import/export actually works. Yes, I know... why there is no option for import/export and then exit? Look for the following messages in the log:
@@ -104,7 +100,7 @@ As you can see the last command starts Keycloak. That's how import/export actual
 06:57:25,332 INFO  [org.keycloak.services] (ServerService Thread Pool -- 64) KC-SERVICES0032: Import finished successfully
 ```
 
-And then press [CTRL]+[C] to exit.
+At the end there will be an error about Quarkus HTTP server not being able to start. That's OK - there is already Kecloak running in this pod and we only wanted to import the test realm.
 
 More on import/export functionality can be found in Keycloak documentation: https://www.keycloak.org/docs/latest/server_admin/#_export_import.
 
@@ -156,17 +152,14 @@ The front-end application is [lukaszbudnik/hotel-spa](https://github.com/lukaszb
 
 Think of GitHub pages as our CDN.
 
-It uses the following keylocak.json configuration:
+It uses the following configuration:
 
-```json
-{
-  "realm": "hotel",
-  "auth-server-url": "https://auth.localtest.me/auth/",
-  "ssl-required": "external",
-  "resource": "react",
-  "public-client": true,
-  "confidential-port": 0
-}
+```javascript
+const keycloak = new Keycloak({
+  url: "https://auth.localtest.me",
+  realm: "hotel",
+  clientId: "react",
+});
 ```
 
 If you followed all the steps in the above tutorial the app is ready to be used: https://lukaszbudnik.github.io/hotel-spa!
