@@ -32,29 +32,40 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:15.0.2
+          image: quay.io/keycloak/keycloak:19.0.3
+          args: ["start"]
+          volumeMounts:
+          - name: certs
+            mountPath: "/etc/certs"
+            readOnly: true
           env:
-            - name: KEYCLOAK_USER
+            - name: KEYCLOAK_ADMIN
               value: "admin"
-            - name: KEYCLOAK_PASSWORD
+            - name: KEYCLOAK_ADMIN_PASSWORD
               value: "admin"
-            - name: PROXY_ADDRESS_FORWARDING
+            - name: KC_HTTPS_CERTIFICATE_FILE
+              value: "/etc/certs/tls.crt"
+            - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+              value: "/etc/certs/tls.key"
+            - name: KC_HEALTH_ENABLED
               value: "true"
-            - name: DB_ADDR
-              value: keycloak-db-postgresql-ha-pgpool
-            - name: DB_DATABASE
+            - name: KC_METRICS_ENABLED
+              value: "true"
+            - name: KC_HOSTNAME
+              value: auth.localtest.me
+            - name: KC_PROXY
+              value: "edge"
+            - name: KC_DB
               value: postgres
-            - name: DB_USER
-              value: postgres
-            - name: DB_PASSWORD
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://keycloak-db-postgresql-ha-pgpool/postgres"
+            - name: KC_DB_USERNAME
+              value: "postgres"
+            - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: keycloak-db-postgresql-ha-postgresql
                   key: postgresql-password
-            - name: DB_SCHEMA
-              value: public
-            - name: DB_VENDOR
-              value: POSTGRES
             - name: JGROUPS_DISCOVERY_PROTOCOL
               value: dns.DNS_PING
             - name: JGROUPS_DISCOVERY_PROPERTIES
@@ -66,11 +77,16 @@ spec:
           ports:
             - name: jgroups
               containerPort: 7600
-            - name: http
-              containerPort: 8080
             - name: https
               containerPort: 8443
           readinessProbe:
             httpGet:
-              path: /auth/realms/master
-              port: 8080
+              scheme: HTTPS
+              path: /health/ready
+              port: 8443
+            initialDelaySeconds: 60
+            periodSeconds: 1
+      volumes:
+      - name: certs
+        secret:
+          secretName: auth-tls-secret
