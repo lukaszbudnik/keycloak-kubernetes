@@ -166,4 +166,4 @@ If you followed all the steps in the above tutorial the app is ready to be used:
 
 # Deploy Keycloak cluster to AWS EKS
 
-The tutorial was moved to separate page: [Deploy Keycloak cluster to AWS EKS](aws-eks-deployment).
+The tutorial was moved to separate page: [Deploy Keycloak cluster to AWS EKS](aws-eks-deployment.md).

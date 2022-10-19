@@ -66,7 +66,7 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=$CLUSTER_EKS_NAME \
   --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller 
+  --set serviceAccount.name=aws-load-balancer-controller
 
 # create CSI ESB driver which is required for PVC which are used by Bitnami PostgreSQL chart
 # for an encrypted EBS please see: https://docs.aws.amazon.com/eks/latest/userguide/csi-iam-role.html
