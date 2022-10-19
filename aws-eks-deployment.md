@@ -1,8 +1,8 @@
 # Deploy Keycloak to AWS EKS
 
-You can follow up below instructions together with the following YouTube video: [Deploying Keycloak cluster to AWS EKS](https://youtu.be/BuNZ7bjbzOQ).
+You can follow below instructions together with my YouTube video: [Deploying Keycloak cluster to AWS EKS](https://youtu.be/BuNZ7bjbzOQ).
 
-A part of standard Kubernetes tools like `kubectl` and `helm` below example uses [eksctl](https://eksctl.io) to automate provisioning of the AWS infrastructure.
+Apart of standard Kubernetes tools like `kubectl` and `helm` below example uses [eksctl](https://eksctl.io) to automate provisioning of the AWS infrastructure.
 
 Things are changing over time, the original video was recorded back in 2021. I refreshed below instructions in October 2022 (EKS now requires CSI ESB for PVC, external-dns chart stopped working and Route53 entry needs to be added manually).
 
@@ -57,6 +57,7 @@ aws iam create-policy \
   --policy-document file://aws-load-balancer-controller-policy.json
 eksctl create iamserviceaccount \
   --cluster=$CLUSTER_EKS_NAME \
+  --region $AWS_REGION \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
   --attach-policy-arn=arn:aws:iam::$AWS_ACCOUNT:policy/AmazonEKS_AWSLoadBalancerControllerIAMPolicy \
@@ -71,16 +72,18 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 # create CSI ESB driver which is required for PVC which are used by Bitnami PostgreSQL chart
 # for an encrypted EBS please see: https://docs.aws.amazon.com/eks/latest/userguide/csi-iam-role.html
 eksctl create iamserviceaccount \
+  --cluster $CLUSTER_EKS_NAME \
+  --region $AWS_REGION \
   --name ebs-csi-controller-sa \
   --namespace kube-system \
-  --cluster $CLUSTER_EKS_NAME \
   --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
   --approve \
   --role-only \
   --role-name AmazonEKS_EBS_CSI_DriverRole
 eksctl create addon \
-  --name aws-ebs-csi-driver \
   --cluster $CLUSTER_EKS_NAME \
+  --region $AWS_REGION \
+  --name aws-ebs-csi-driver \
   --service-account-role-arn arn:aws:iam::$AWS_ACCOUNT:role/AmazonEKS_EBS_CSI_DriverRole
 ```
 
@@ -95,16 +98,19 @@ kubectl create secret -n hotel tls auth-tls-secret --key auth-tls.key --cert aut
 # deploy PostgreSQL cluster - in dev we will use 1 replica, in production use the default value of 3 (or set it to even a higher value)
 helm install -n hotel keycloak-db bitnami/postgresql-ha --set postgresql.replicaCount=1
 # deploy Keycloak cluster
+# envsubst replaces all env variables placeholders with their actual values
 envsubst < keycloak-eks-placeholder.yaml > keycloak-eks.yaml
 kubectl apply -n hotel -f keycloak-eks.yaml
 # deploy AWS ALB ingress
-# substitude PLACEHOLDER_HOSTNAME with target domain name
+# envsubst replaces all env variables placeholders with their actual values
 envsubst < keycloak-ingress-eks-placeholder.yaml > keycloak-ingress-eks.yaml
 # deploy the ingress
 kubectl apply -n hotel -f keycloak-ingress-eks.yaml
 ```
 
-Wait a minute for ALB to be provisioned. Copy the DNS of the ALB and add it as an A alias record in Route53, then open Keycloak:
+Wait a minute for ALB to be provisioned. Copy the DNS of the ALB and add it as an A alias record in Route53.
+
+Open Keycloak:
 
 ```bash
 open https://$CLUSTER_DNS_NAME
@@ -119,7 +125,8 @@ If you use different IAM user/role for eksctl and AWS console you need to add IA
 export AWS_IAM_ARN=$(aws sts get-caller-identity | jq -r '.Arn')
 
 eksctl create iamidentitymapping \
-  --cluster $CLUSTER_NAME \
+  --cluster $CLUSTER_EKS_NAME \
+  --region $AWS_REGION \
   --arn $AWS_IAM_ARN \
   --username admin \
   --group system:masters
