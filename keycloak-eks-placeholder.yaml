@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+    - name: https
+      port: 443
+      targetPort: 8443
+  selector:
+    app: keycloak
+  type: ClusterIP
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:19.0.3
+          args: ["start", "--cache-stack=kubernetes"]
+          volumeMounts:
+          - name: certs
+            mountPath: "/etc/certs"
+            readOnly: true
+          env:
+            - name: KEYCLOAK_ADMIN
+              value: "admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+            - name: KC_HTTPS_CERTIFICATE_FILE
+              value: "/etc/certs/tls.crt"
+            - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+              value: "/etc/certs/tls.key"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: KC_METRICS_ENABLED
+              value: "true"
+            - name: KC_HOSTNAME
+              value: $CLUSTER_DNS_NAME
+            - name: KC_PROXY
+              value: "edge"
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://keycloak-db-postgresql-ha-pgpool/postgres"
+            - name: KC_DB_USERNAME
+              value: "postgres"
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-postgresql-ha-postgresql
+                  key: postgresql-password
+            - name: jgroups.dns.query
+              value: keycloak
+          ports:
+            - name: jgroups
+              containerPort: 7600
+            - name: https
+              containerPort: 8443
+          readinessProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /health/ready
+              port: 8443
+            initialDelaySeconds: 60
+            periodSeconds: 1
+      volumes:
+      - name: certs
+        secret:
+          secretName: auth-tls-secret
