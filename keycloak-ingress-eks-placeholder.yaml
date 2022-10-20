@@ -8,9 +8,10 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
     alb.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    alb.ingress.kubernetes.io/certificate-arn: $CLUSTER_CERT_ARN
 spec:
   rules:
-    - host: PLACEHOLDER_HOSTNAME
+    - host: $CLUSTER_DNS_NAME
       http:
         paths:
           - pathType: Prefix
