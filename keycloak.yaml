@@ -33,7 +33,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:19.0.3
-          args: ["start"]
+          args: ["start", "--cache-stack=kubernetes"]
           volumeMounts:
           - name: certs
             mountPath: "/etc/certs"
@@ -66,14 +66,8 @@ spec:
                 secretKeyRef:
                   name: keycloak-db-postgresql-ha-postgresql
                   key: postgresql-password
-            - name: JGROUPS_DISCOVERY_PROTOCOL
-              value: dns.DNS_PING
-            - name: JGROUPS_DISCOVERY_PROPERTIES
-              value: "dns_query=keycloak"
-            - name: CACHE_OWNERS_COUNT
-              value: "2"
-            - name: CACHE_OWNERS_AUTH_SESSIONS_COUNT
-              value: "2"
+            - name: jgroups.dns.query
+              value: keycloak
           ports:
             - name: jgroups
               containerPort: 7600
