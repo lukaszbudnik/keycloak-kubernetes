@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:19.0.3
+          image: quay.io/keycloak/keycloak:20.0.2
           args: ["start", "--cache-stack=kubernetes"]
           volumeMounts:
           - name: certs
