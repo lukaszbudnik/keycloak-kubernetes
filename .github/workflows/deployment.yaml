@@ -12,7 +12,7 @@ jobs:
     - name: Setup Kubernetes
       uses: debianmaster/actions-k3s@master
       with:
-        version: 'v1.21.2-k3s1'
+        version: 'v1.26.0-k3s1'
 
     - name: Deploy Keycloak
       run: ./deploy-local-cluster.sh
