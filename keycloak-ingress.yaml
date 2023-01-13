@@ -3,9 +3,10 @@ kind: Ingress
 metadata:
   name: auth-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
       - fake
