@@ -26,6 +26,13 @@ kubectl get deployment -n hotel
 kubectl get service -n hotel
 kubectl get ingress -n hotel
 
-curl -k https://auth.localtest.me/realms/master/protocol/openid-connect/certs
+kubectl get pods -n hotel
 
-exit 0
+# check if all pods are in ready status
+pods=$(kubectl get pods -n hotel --no-headers=true | awk '{print $2}')
+all=$(echo "$pods" | wc -l)
+ready=$(echo "$pods" | grep '1/1' | wc -l)
+
+[ "$all" = "$ready" ]
+
+exit $?

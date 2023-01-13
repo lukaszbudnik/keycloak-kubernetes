@@ -65,7 +65,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: keycloak-db-postgresql-ha-postgresql
-                  key: postgresql-password
+                  key: password
             - name: jgroups.dns.query
               value: keycloak
           ports:
